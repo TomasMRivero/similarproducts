@@ -2,10 +2,13 @@ package com.tmartinez.similarproducts.infrastructure.adapter.in.mapper;
 
 import com.tmartinez.similarproducts.domain.model.Product;
 import com.tmartinez.similarproducts.infrastructure.adapter.in.api.dto.ProductDetail;
+import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+@Component
 public class ProductDetailMapper {
     public ProductDetail toInDTO(Product product){
         if(product == null){
@@ -19,4 +22,5 @@ public class ProductDetailMapper {
         }
         return products.stream().map(this::toInDTO).toList();
     }
+    public ProductDetailMapper () {}
 }

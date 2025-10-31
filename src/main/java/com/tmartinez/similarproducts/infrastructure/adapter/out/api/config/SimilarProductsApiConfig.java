@@ -10,6 +10,9 @@ import org.springframework.web.client.RestTemplate;
 public class SimilarProductsApiConfig {
     @Bean
     public RestTemplate restTemplate(RestTemplateBuilder builder, @Value("${similarproducts.api.baseurl}") String baseUrl) {
+        if (baseUrl == null || baseUrl.isEmpty()) {
+            throw new IllegalArgumentException("baseUrl cannot be null or empty");
+        }
         return builder.rootUri(baseUrl).build();
     }
 }

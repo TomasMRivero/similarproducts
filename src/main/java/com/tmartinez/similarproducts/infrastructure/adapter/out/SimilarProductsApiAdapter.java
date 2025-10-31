@@ -12,6 +12,7 @@ import org.springframework.web.client.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -27,7 +28,8 @@ public class SimilarProductsApiAdapter implements SimilarProductsOutPort {
     @Override
     public List<String> getRelatedProducts(String productId) {
         try{
-            return restTemplate.getForObject("product/{productId}/similarids", List.class, productId);
+            List response = restTemplate.getForObject("/product/{productId}/similarids", List.class, productId);
+            return response.stream().map(Object::toString).toList();
         } catch (HttpClientErrorException.NotFound e) {
             log.error("Product {} not found", productId);
             return Collections.emptyList();
