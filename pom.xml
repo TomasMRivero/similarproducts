@@ -55,7 +55,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
 		</dependency>
         <dependency>
             <groupId>org.openapitools</groupId>
@@ -81,6 +80,12 @@
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <version>1.1.0.Final</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.12.2</version>
         </dependency>
 	</dependencies>
 
@@ -134,6 +139,7 @@
                             <modelPackage>com.tmartinez.similarproducts.infrastructure.adapter.in.api.dto</modelPackage>
                             <generateApis>false</generateApis>
                             <generateModels>true</generateModels>
+                            <generateApiTests>false</generateApiTests>
                             <configOptions>
                                 <delegatePattern>true</delegatePattern>
                             </configOptions>
@@ -153,6 +159,7 @@
                             <modelPackage>com.tmartinez.similarproducts.infrastructure.adapter.out.api.dto</modelPackage>
                             <generateApis>false</generateApis>
                             <generateModels>true</generateModels>
+                            <generateApiTests>false</generateApiTests>
                             <configOptions>
                                 <delegatePattern>true</delegatePattern>
                             </configOptions>
