@@ -2,9 +2,11 @@ package com.tmartinez.similarproducts.application.service;
 
 import com.tmartinez.similarproducts.application.port.out.SimilarProductsOutPort;
 import com.tmartinez.similarproducts.domain.model.Product;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class GetSimilarProductsService {
     private final SimilarProductsOutPort similarProductsOutPort;
 
