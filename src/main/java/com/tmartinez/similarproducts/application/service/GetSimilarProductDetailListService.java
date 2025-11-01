@@ -1,9 +1,11 @@
 package com.tmartinez.similarproducts.application.service;
 
 import com.tmartinez.similarproducts.application.dto.RelatedProductListResponse;
+import com.tmartinez.similarproducts.application.exception.ExternalApiException;
 import com.tmartinez.similarproducts.application.port.in.GetSimilarProductDetailListUseCase;
 import com.tmartinez.similarproducts.application.port.out.SimilarProductsOutPort;
 import com.tmartinez.similarproducts.domain.model.Product;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Service
 public class GetSimilarProductDetailListService implements GetSimilarProductDetailListUseCase {
     private final SimilarProductsOutPort similarProductsOutPort;
@@ -25,14 +28,19 @@ public class GetSimilarProductDetailListService implements GetSimilarProductDeta
         List<String> relatedProductIds = similarProductsOutPort.getRelatedProducts(productId);
         List<Product> productList = new ArrayList<>();
 
-        relatedProductIds.forEach(
-            pid -> {
-                Product product = similarProductsOutPort.getProductDetails(pid);
-                if (Objects.nonNull(product)) {
-                    productList.add(product);
-                }
-            }
-        );
+        try{
+            relatedProductIds.forEach(
+                    pid -> {
+                        Product product = similarProductsOutPort.getProductDetails(pid);
+                        if (Objects.nonNull(product)) {
+                            productList.add(product);
+                        }
+                    }
+            );
+        } catch (ExternalApiException ex) {
+            log.error(ex.getMessage(), ex);
+            throw ex;
+        }
 
         return productList;
     }
