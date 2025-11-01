@@ -4,6 +4,7 @@ import com.tmartinez.similarproducts.application.dto.RelatedProductListResponse;
 import com.tmartinez.similarproducts.application.port.in.GetSimilarProductDetailListUseCase;
 import com.tmartinez.similarproducts.application.port.out.SimilarProductsOutPort;
 import com.tmartinez.similarproducts.domain.model.Product;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ public class GetSimilarProductDetailListService implements GetSimilarProductDeta
     }
 
     @Override
+    @Cacheable(value = "similarProductsResponse", key = "#productId")
     public List<Product> getSimilarProductDetailList(String productId) {
         List<String> relatedProductIds = similarProductsOutPort.getRelatedProducts(productId);
         List<Product> productList = new ArrayList<>();

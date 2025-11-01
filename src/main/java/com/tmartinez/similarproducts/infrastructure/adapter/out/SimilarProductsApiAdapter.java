@@ -6,6 +6,7 @@ import com.tmartinez.similarproducts.infrastructure.adapter.out.api.dto.ProductD
 import com.tmartinez.similarproducts.infrastructure.adapter.out.api.mapper.ProductMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.*;
@@ -24,8 +25,9 @@ public class SimilarProductsApiAdapter implements SimilarProductsOutPort {
         this.restTemplate = restTemplate;
         this.productMapper = productMapper;
     }
-    
+
     @Override
+    @Cacheable(value = "relatedProducts", key = "#productId")
     public List<String> getRelatedProducts(String productId) {
         try{
             List response = restTemplate.getForObject("/product/{productId}/similarids", List.class, productId);
@@ -47,6 +49,7 @@ public class SimilarProductsApiAdapter implements SimilarProductsOutPort {
     }
 
     @Override
+    @Cacheable(value = "productDetails", key = "#productId")
     public Product getProductDetails(String productId) {
         try{
             ProductDetail productDetailResponse = restTemplate.getForObject("/product/{productId}", ProductDetail.class, productId);
