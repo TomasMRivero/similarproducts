@@ -80,8 +80,9 @@ public class SimilarProductsApiAdapter implements SimilarProductsOutPort {
         }
     }
 
+    @Override
     @Async("productDetailExecutor")
-    public CompletableFuture<Product>  getProductDetailAsync(String productId) {
+    public CompletableFuture<Product> getProductDetailsAsync(String productId) {
         try{
             ProductDetail productDetailResponse = restTemplate.getForObject("/product/{productId}", ProductDetail.class, productId);
             Product domainProduct = productMapper.toDomain(productDetailResponse);
