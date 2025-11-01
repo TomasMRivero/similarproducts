@@ -11,11 +11,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -77,4 +79,25 @@ public class SimilarProductsApiAdapter implements SimilarProductsOutPort {
             return null;
         }
     }
+
+    @Async("productDetailExecutor")
+    public CompletableFuture<Product>  getProductDetailAsync(String productId) {
+        try{
+            ProductDetail productDetailResponse = restTemplate.getForObject("/product/{productId}", ProductDetail.class, productId);
+            Product domainProduct = productMapper.toDomain(productDetailResponse);
+            return CompletableFuture.completedFuture(domainProduct);
+        } catch (HttpClientErrorException.NotFound e){
+            log.error("Product {} not found", productId);
+        } catch (HttpServerErrorException e) {
+            log.error("External API Error 5xx when fetching product {}: {}", productId, e.getStatusCode());
+        } catch (ResourceAccessException e) {
+            log.error("Timeout when fetching product {}}", productId);
+        } catch (RestClientException e) {
+            log.error("Connection error when fetching {}: {}", productId, e.getMessage());
+        } catch (Exception e){
+            log.error("Unexpected error: {}", e.getMessage());
+        }
+        return CompletableFuture.completedFuture(null);
+    }
+
 }
