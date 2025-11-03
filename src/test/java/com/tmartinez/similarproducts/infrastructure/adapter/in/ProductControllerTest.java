@@ -36,7 +36,7 @@ public class ProductControllerTest {
         mockMvc.perform(get("/product/2/similar"))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.similarProducts[0].id").value("1"));
+                .andExpect(jsonPath("$[0].id").value("1"));
     }
 
     @Test

@@ -1,5 +1,8 @@
 package com.tmartinez.similarproducts.infrastructure.adapter.out;
 
+import com.tmartinez.similarproducts.application.exception.ExternalApiErrorException;
+import com.tmartinez.similarproducts.application.exception.ExternalApiNotFoundException;
+import com.tmartinez.similarproducts.application.exception.ExternalApiTimeoutException;
 import com.tmartinez.similarproducts.domain.model.Product;
 import com.tmartinez.similarproducts.infrastructure.adapter.out.api.mapper.ProductMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,8 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.ResponseCreator;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -43,21 +48,11 @@ public class SimilarProductsApiAdapterTest {
     }
 
     @Test
-    void shouldNotThrowRelatedProductIdList() {
+    void shouldThrowRelatedProductIdList() {
         mockRestServiceServer.expect(once(), requestTo("/product/1/similarids"))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
-        assertDoesNotThrow(() -> similarProductsApiAdapter.getRelatedProducts("1"));
-        mockRestServiceServer.verify();
-    }
-
-    @Test
-    void shouldBeEmptyListIfNotFoundRelatedProductIdList() {
-        mockRestServiceServer.expect(once(), requestTo("/product/1/similarids"))
-                .andRespond(withStatus(HttpStatus.NOT_FOUND));
-        List<String> result = similarProductsApiAdapter.getRelatedProducts("1");
-
-        assertEquals("[]", result.toString());
+        assertThrows(ExternalApiNotFoundException.class, () -> similarProductsApiAdapter.getRelatedProducts("1"));
         mockRestServiceServer.verify();
     }
 
@@ -66,7 +61,18 @@ public class SimilarProductsApiAdapterTest {
         mockRestServiceServer.expect(once(), requestTo("/product/1/similarids"))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        assertThrows(HttpServerErrorException.class, () -> similarProductsApiAdapter.getRelatedProducts("1"));
+        assertThrows(ExternalApiErrorException.class, () -> similarProductsApiAdapter.getRelatedProducts("1"));
+        mockRestServiceServer.verify();
+    }
+
+
+    @Test
+    void shouldThrowOnStatusTimeoutRelatedProductIdList() {
+        mockRestServiceServer.expect(once(), requestTo("/product/2/similarids"))
+                .andRespond(delayedResponse());
+
+        assertThrows(ExternalApiTimeoutException.class, () -> similarProductsApiAdapter.getRelatedProducts("2"));
+        mockRestServiceServer.verify();
     }
 
     @Test
@@ -103,11 +109,25 @@ public class SimilarProductsApiAdapterTest {
     }
 
     @Test
-    void shouldThrowOnStatus500ProductDetail() {
+    void shouldBeNullOnStatus500ProductDetail() {
         mockRestServiceServer.expect(once(), requestTo("/product/1"))
                 .andRespond(withStatus(HttpStatus.INTERNAL_SERVER_ERROR));
 
-        assertThrows(HttpServerErrorException.class, () -> similarProductsApiAdapter.getProductDetails("1"));
+        assertNull(similarProductsApiAdapter.getProductDetails("1"));
         mockRestServiceServer.verify();
+    }
+
+    @Test
+    void shouldBeNullOnTimeoutProductDetail() {
+        mockRestServiceServer.expect(once(), requestTo("/product/2"))
+                .andRespond(delayedResponse());
+
+        assertNull(similarProductsApiAdapter.getProductDetails("2"));
+        mockRestServiceServer.verify();
+    }
+
+
+    private static ResponseCreator delayedResponse() {
+        return request -> { throw new ResourceAccessException("Simulated timeout"); };
     }
 }

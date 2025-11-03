@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.when;
@@ -27,8 +28,8 @@ public class GetSimilarProductDetailListServiceTest
     @Test
     void shouldGetEveryDetail() {
         when(adapter.getRelatedProducts("1")).thenReturn(List.of("2", "3"));
-        when(adapter.getProductDetails("2")).thenReturn(new Product("2", "product2", 200.0, true));
-        when(adapter.getProductDetails("3")).thenReturn(new Product("3", "product3", 300.0, false));
+        when(adapter.getProductDetailsAsync("2")).thenReturn(CompletableFuture.completedFuture(new Product("2", "product2", 200.0, true)));
+        when(adapter.getProductDetailsAsync("3")).thenReturn(CompletableFuture.completedFuture(new Product("3", "product3", 300.0, false)));
 
         List<Product> result = service.getSimilarProductDetailList("1");
 
@@ -40,8 +41,8 @@ public class GetSimilarProductDetailListServiceTest
     @Test
     void shouldGetPartialListDetail() {
         when(adapter.getRelatedProducts("1")).thenReturn(List.of("2", "3"));
-        when(adapter.getProductDetails("2")).thenReturn(new Product("2", "product2", 200.0, true));
-        when(adapter.getProductDetails("3")).thenReturn(null);
+        when(adapter.getProductDetailsAsync("2")).thenReturn(CompletableFuture.completedFuture(new Product("2", "product2", 200.0, true)));
+        when(adapter.getProductDetailsAsync("3")).thenReturn(CompletableFuture.completedFuture(null));
 
         List<Product> result = service.getSimilarProductDetailList("1");
 
