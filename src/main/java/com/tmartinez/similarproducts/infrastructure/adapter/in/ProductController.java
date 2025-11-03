@@ -1,13 +1,10 @@
 package com.tmartinez.similarproducts.infrastructure.adapter.in;
 
-import com.tmartinez.similarproducts.application.dto.RelatedProductListResponse;
-import com.tmartinez.similarproducts.application.exception.ExternalApiException;
 import com.tmartinez.similarproducts.application.exception.ExternalApiNotFoundException;
 import com.tmartinez.similarproducts.application.exception.ExternalApiTimeoutException;
 import com.tmartinez.similarproducts.application.port.in.GetSimilarProductDetailListUseCase;
 import com.tmartinez.similarproducts.domain.model.Product;
 import com.tmartinez.similarproducts.infrastructure.adapter.in.api.dto.ProductDetail;
-import com.tmartinez.similarproducts.infrastructure.adapter.in.dto.SimilarProductsResponse;
 import com.tmartinez.similarproducts.infrastructure.adapter.in.mapper.ProductDetailMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/product")
@@ -32,7 +28,7 @@ public class ProductController {
     }
 
     @GetMapping("/{idProduct}/similar")
-    public ResponseEntity<SimilarProductsResponse> getSimilarProducts(@PathVariable String idProduct){
+    public ResponseEntity<List<ProductDetail>> getSimilarProducts(@PathVariable String idProduct){
         try{
             List<Product> response = getProductsService.getSimilarProductDetailList(idProduct);
 
@@ -40,7 +36,7 @@ public class ProductController {
                 return ResponseEntity.notFound().build();
             }
 
-            SimilarProductsResponse dto = new SimilarProductsResponse(productDetailMapper.toInDTO(response));
+            List<ProductDetail> dto = productDetailMapper.toInDTO(response);
 
             return ResponseEntity.ok(dto);
         } catch (ExternalApiNotFoundException ex) {
