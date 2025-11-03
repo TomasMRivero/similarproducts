@@ -82,6 +82,7 @@ public class SimilarProductsApiAdapter implements SimilarProductsOutPort {
 
     @Override
     @Async("productDetailExecutor")
+    @Cacheable(value = "productDetails", key = "#productId", unless = "#result == null")
     public CompletableFuture<Product> getProductDetailsAsync(String productId) {
         try{
             ProductDetail productDetailResponse = restTemplate.getForObject("/product/{productId}", ProductDetail.class, productId);
