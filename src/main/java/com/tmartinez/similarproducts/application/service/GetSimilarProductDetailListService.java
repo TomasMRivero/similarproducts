@@ -5,6 +5,7 @@ import com.tmartinez.similarproducts.application.port.in.GetSimilarProductDetail
 import com.tmartinez.similarproducts.application.port.out.SimilarProductsOutPort;
 import com.tmartinez.similarproducts.domain.model.Product;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,9 @@ import java.util.concurrent.CompletableFuture;
 public class GetSimilarProductDetailListService implements GetSimilarProductDetailListUseCase {
     private final SimilarProductsOutPort similarProductsOutPort;
 
-    public GetSimilarProductDetailListService(SimilarProductsOutPort similarProductsOutPort) {
+    public GetSimilarProductDetailListService(
+            @Qualifier("similarProductsRetryApiAdapter")SimilarProductsOutPort similarProductsOutPort
+    ) {
         this.similarProductsOutPort = similarProductsOutPort;
     }
 

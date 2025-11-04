@@ -20,4 +20,15 @@ public class AsyncConfig {
         executor.initialize();
         return executor;
     }
+
+    @Bean(name = "retryExecutor")
+    public Executor retryExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(1);
+        executor.setMaxPoolSize(5);
+        executor.setQueueCapacity(30);
+        executor.setThreadNamePrefix("retryExecutor-");
+        executor.initialize();
+        return executor;
+    }
 }

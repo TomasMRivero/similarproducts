@@ -35,8 +35,8 @@ public class SimilarProductsApiConfig {
         }
 
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(20000);
-        requestFactory.setReadTimeout(30000);
+        requestFactory.setConnectTimeout(60000);
+        requestFactory.setReadTimeout(60000);
         RestTemplate restTemplate = new RestTemplate(requestFactory);
         restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(baseUrl));
         return restTemplate;
